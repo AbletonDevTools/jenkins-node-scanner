@@ -1,4 +1,7 @@
 # jenkins-node-scanner
+
+[![Build Status](https://travis-ci.org/AbletonDevTools/jenkins-node-scanner.svg?branch=master)](https://travis-ci.org/AbletonDevTools/jenkins-node-scanner)
+
 A service to list Jenkins nodes for further Prometheus scraping. The output is intended to
 be read by Prometheus' `file_sd_config` section.
 
