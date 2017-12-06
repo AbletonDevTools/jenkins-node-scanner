@@ -14,10 +14,10 @@ import tempfile
 import time
 
 import jenkins
-from prometheus_client import start_http_server, Counter, Gauge, Summary
+from prometheus_client import start_http_server, Counter, Gauge, Histogram
 
 
-JENKINS_API_LATENCY = Summary(
+JENKINS_API_LATENCY = Histogram(
     'jenkins_api_latency_seconds',
     'Response latency of Jenkins API (seconds)',
     ['api_method'],
@@ -30,7 +30,7 @@ JENKINS_API_EXCEPTIONS = Counter(
 )
 
 GLOBAL_EXCEPTIONS = Counter(
-    'node_scraper_exceptions',
+    'node_scanner_exceptions',
     'Unhandled top-level exceptions.',
     [],
 )
