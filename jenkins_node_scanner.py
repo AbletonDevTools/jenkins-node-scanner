@@ -30,7 +30,7 @@ JENKINS_API_EXCEPTIONS = Counter(
 )
 
 GLOBAL_EXCEPTIONS = Counter(
-    'node_scraper_exceptions',
+    'node_scanner_exceptions',
     'Unhandled top-level exceptions.',
     [],
 )
