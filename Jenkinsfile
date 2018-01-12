@@ -7,7 +7,7 @@ def addStages() {
 
   runTheBuilds.timedStage("Checkout") {
     // Print out all environment variables for debugging purposes
-    echo sh(returnStdout:true, script:"env")
+    sh 'env'
     checkout scm
   }
 
