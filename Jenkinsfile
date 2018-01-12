@@ -54,12 +54,10 @@ runTheBuilds.runForSpecificBranches(runTheBuilds.COMMON_BRANCH_FILTERS, true) {
       runTheBuilds.report('pending', env.CALLBACK_URL)
       addStages()
       runTheBuilds.report('success', env.CALLBACK_URL)
-    }
-    catch (error) {
+    } catch (error) {
       runTheBuilds.report('failure', env.CALLBACK_URL)
       throw error
-    }
-    finally {
+    } finally {
       runTheBuilds.timedStage('Cleanup') {
         dir(env.WORKSPACE) {
           deleteDir()
