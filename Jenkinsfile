@@ -1,4 +1,4 @@
-@Library(['codenarc@0.1.0', 'python-utils@0.3.0', 'runthebuilds@0.5.0']) _
+@Library(['codenarc@0.5.0', 'python-utils@0.3.0', 'runthebuilds@0.5.0']) _
 
 
 def addStages() {
@@ -17,7 +17,7 @@ def addStages() {
   }
 
   runTheBuilds.timedStage('Check') {
-    parallel(failFast:false,
+    parallel(failFast: false,
       codenarc: {
         codenarc.check()
       },
