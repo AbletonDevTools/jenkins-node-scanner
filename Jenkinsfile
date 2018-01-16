@@ -18,11 +18,11 @@ def addStages() {
 
   runTheBuilds.timedStage('Check') {
     parallel(failFast: false,
-      groovylint: {
-        groovylint.check('./Jenkinsfile')
-      },
       flake8: {
         venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
+      },
+      groovylint: {
+        groovylint.check('./Jenkinsfile')
       },
       pydocstyle: {
         venv.run('pydocstyle jenkins_node_scanner.py .')
