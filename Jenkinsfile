@@ -1,4 +1,4 @@
-@Library(['ableton-utils@0.1.0', 'codenarc@0.5.0', 'python-utils@0.3.0']) _
+@Library(['ableton-utils@0.1.0', 'groovylint@0.1.1', 'python-utils@0.3.0']) _
 
 
 def addStages() {
@@ -18,8 +18,8 @@ def addStages() {
 
   runTheBuilds.timedStage('Check') {
     parallel(failFast: false,
-      codenarc: {
-        codenarc.check()
+      groovylint: {
+        groovylint.check('./Jenkinsfile')
       },
       flake8: {
         venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
