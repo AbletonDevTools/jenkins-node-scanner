@@ -1,26 +1,22 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.1.0', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
+@Library(['ableton-utils@0.6.0', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
 
-import com.ableton.DTRImage as DTRImage
 import com.ableton.VirtualEnv as VirtualEnv
 
 
-void addStages() {
-  DTRImage dtrImage = dtr.create(this, 'devtools', 'jenkins-node-scanner')
-  VirtualEnv venv = virtualenv.create(this, 'python3.6')
-
-  runTheBuilds.timedStage('Checkout') {
-    // Print out all environment variables for debugging purposes
-    sh 'env'
-    checkout scm
-  }
-
-  runTheBuilds.timedStage('Setup') {
+runTheBuilds.runDevToolsProject(
+  setup: { data ->
+    data['dtrImage'] = dtr.create(this, 'devtools', 'jenkins-node-scanner')
+    VirtualEnv venv = virtualenv.create(this, 'python3.6')
     venv.run('pip install -r requirements.txt')
     venv.run('pip install pylint flake8 yamllint pydocstyle')
-  }
-
-  runTheBuilds.timedStage('Check') {
+    data['venv'] = venv
+  },
+  build: { data ->
+    data['dtrImage'].build()
+  },
+  test: { data ->
+    VirtualEnv venv = data['venv'] as VirtualEnv
     parallel(failFast: false,
       flake8: {
         venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
@@ -38,35 +34,11 @@ void addStages() {
         venv.run('yamllint .travis.yml')
       },
     )
-  }
-
-  runTheBuilds.timedStage('Build') {
-    dtrImage.build()
-  }
-
-  if (env.HEAD_REF == 'origin/master' || env.HEAD_REF == 'refs/heads/master') {
-    runTheBuilds.timedStage('Deploy') {
-      dtrImage.deploy('8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
+  },
+  deploy: { data ->
+    runTheBuilds.runForSpecificBranches(['master'], false) {
+      data['dtrImage'].deploy(
+        '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
     }
-  }
-}
-
-
-runTheBuilds.runForSpecificBranches(runTheBuilds.COMMON_BRANCH_FILTERS, true) {
-  node('generic-linux') {
-    try {
-      runTheBuilds.report('pending', env.CALLBACK_URL)
-      addStages()
-      runTheBuilds.report('success', env.CALLBACK_URL)
-    } catch (error) {
-      runTheBuilds.report('failure', env.CALLBACK_URL)
-      throw error
-    } finally {
-      runTheBuilds.timedStage('Cleanup') {
-        dir(env.WORKSPACE) {
-          deleteDir()
-        }
-      }
-    }
-  }
-}
+  },
+)
