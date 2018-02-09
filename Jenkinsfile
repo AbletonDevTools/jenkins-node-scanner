@@ -1,9 +1,13 @@
-@Library(['ableton-utils@0.1.0', 'groovylint@0.1.1', 'python-utils@0.3.0']) _
+@SuppressWarnings('VariableTypeRequired') // For _ variable
+@Library(['ableton-utils@0.1.0', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
+
+import com.ableton.DTRImage as DTRImage
+import com.ableton.VirtualEnv as VirtualEnv
 
 
-def addStages() {
-  def dtrImage = dtr.create(this, 'devtools', 'jenkins-node-scanner')
-  def venv = virtualenv.create(this, 'python3.6')
+void addStages() {
+  DTRImage dtrImage = dtr.create(this, 'devtools', 'jenkins-node-scanner')
+  VirtualEnv venv = virtualenv.create(this, 'python3.6')
 
   runTheBuilds.timedStage('Checkout') {
     // Print out all environment variables for debugging purposes
