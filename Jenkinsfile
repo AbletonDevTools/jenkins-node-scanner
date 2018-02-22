@@ -16,7 +16,7 @@ runTheBuilds.runDevToolsProject(
     data['dtrImage'].build()
   },
   test: { data ->
-    VirtualEnv venv = data['venv'] as VirtualEnv
+    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
         venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
