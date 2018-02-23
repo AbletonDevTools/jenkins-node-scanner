@@ -1,5 +1,5 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.0', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
+@Library(['ableton-utils@0.6.4', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
 
 import com.ableton.VirtualEnv as VirtualEnv
 
@@ -16,7 +16,7 @@ runTheBuilds.runDevToolsProject(
     data['dtrImage'].build()
   },
   test: { data ->
-    VirtualEnv venv = data['venv'] as VirtualEnv
+    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
         venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
