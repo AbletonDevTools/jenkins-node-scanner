@@ -28,6 +28,11 @@ runTheBuilds.runDevToolsProject(
       groovylint: {
         groovylint.check('./Jenkinsfile')
       },
+      hadolint: {
+        docker.image('hadolint/hadolint').inside("-v ${pwd()}:/ws") {
+          sh 'hadolint /ws/Dockerfile'
+        }
+      },
       pydocstyle: {
         venv.run('pydocstyle jenkins_node_scanner.py .')
       },
