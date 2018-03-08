@@ -1,5 +1,9 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.4', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
+@Library([
+  'ableton-utils@0.6.4',
+  'groovylint@0.3.0',
+  'python-utils@0.3.0',
+]) _
 
 import com.ableton.VirtualEnv as VirtualEnv
 
