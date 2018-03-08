@@ -1,13 +1,17 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.4', 'groovylint@0.3.0', 'python-utils@0.3.0']) _
+@Library([
+  'ableton-utils@0.8',
+  'groovylint@0.3',
+  'python-utils@0.8',
+]) _
 
 import com.ableton.VirtualEnv as VirtualEnv
 
 
 runTheBuilds.runDevToolsProject(
   setup: { data ->
-    data['dtrImage'] = dtr.create(this, 'devtools', 'jenkins-node-scanner')
-    VirtualEnv venv = virtualenv.create(this, 'python3.6')
+    data['dtrImage'] = dtr.create('devtools', 'jenkins-node-scanner')
+    VirtualEnv venv = virtualenv.create('python3.6')
     venv.run('pip install -r requirements.txt')
     venv.run('pip install pylint flake8 yamllint pydocstyle')
     data['venv'] = venv
@@ -23,6 +27,11 @@ runTheBuilds.runDevToolsProject(
       },
       groovylint: {
         groovylint.check('./Jenkinsfile')
+      },
+      hadolint: {
+        docker.image('hadolint/hadolint').inside("-v ${pwd()}:/ws") {
+          sh 'hadolint /ws/Dockerfile'
+        }
       },
       pydocstyle: {
         venv.run('pydocstyle jenkins_node_scanner.py .')
