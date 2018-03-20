@@ -2,7 +2,7 @@
 @Library([
   'ableton-utils@0.8',
   'groovylint@0.3',
-  'python-utils@0.8',
+  'python-utils@0.9',
 ]) _
 
 import com.ableton.VirtualEnv as VirtualEnv
@@ -20,10 +20,9 @@ runTheBuilds.runDevToolsProject(
     data['dtrImage'].build()
   },
   test: { data ->
-    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
-        venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
+        data.venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
       },
       groovylint: {
         groovylint.check('./Jenkinsfile')
@@ -34,13 +33,13 @@ runTheBuilds.runDevToolsProject(
         }
       },
       pydocstyle: {
-        venv.run('pydocstyle jenkins_node_scanner.py .')
+        data.venv.run('pydocstyle jenkins_node_scanner.py .')
       },
       pylint: {
-        venv.run('pylint jenkins_node_scanner.py --max-line-length 90')
+        data.venv.run('pylint jenkins_node_scanner.py --max-line-length 90')
       },
       yamllint: {
-        venv.run('yamllint .travis.yml')
+        data.venv.run('yamllint .travis.yml')
       },
     )
   },
@@ -49,6 +48,11 @@ runTheBuilds.runDevToolsProject(
       data['dtrImage'].push()
       data['dtrImage'].deploy(
         '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
+    }
+  },
+  cleanup: { data ->
+    if (data?.venv) {
+      data.venv.cleanup()
     }
   },
 )
