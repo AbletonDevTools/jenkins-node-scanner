@@ -2,7 +2,7 @@
 @Library([
   'ableton-utils@0.8',
   'groovylint@0.3',
-  'python-utils@0.8',
+  'python-utils@0.9',
 ]) _
 
 import com.ableton.VirtualEnv as VirtualEnv
@@ -49,6 +49,11 @@ runTheBuilds.runDevToolsProject(
       data['dtrImage'].push()
       data['dtrImage'].deploy(
         '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
+    }
+  },
+  cleanup: { data ->
+    if (data?.venv) {
+      data.venv.cleanup()
     }
   },
 )
