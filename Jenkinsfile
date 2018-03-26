@@ -39,7 +39,7 @@ runTheBuilds.runDevToolsProject(
         data.venv.run('pylint jenkins_node_scanner.py --max-line-length 90')
       },
       yamllint: {
-        data.venv.run('yamllint .travis.yml')
+        data.venv.run('yamllint --strict .travis.yml')
       },
     )
   },
