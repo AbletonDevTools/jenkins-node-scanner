@@ -22,7 +22,7 @@ runTheBuilds.runDevToolsProject(
   test: { data ->
     parallel(failFast: false,
       flake8: {
-        data.venv.run('flake8 jenkins_node_scanner.py --max-line-length 90 -v')
+        data.venv.run('flake8 --max-line-length=90 -v .')
       },
       groovylint: {
         groovylint.check('./Jenkinsfile')
@@ -33,10 +33,10 @@ runTheBuilds.runDevToolsProject(
         }
       },
       pydocstyle: {
-        data.venv.run('pydocstyle jenkins_node_scanner.py .')
+        data.venv.run('pydocstyle -v .')
       },
       pylint: {
-        data.venv.run('pylint jenkins_node_scanner.py --max-line-length 90')
+        data.venv.run('pylint --max-line-length=90 jenkins_node_scanner.py')
       },
       yamllint: {
         data.venv.run('yamllint --strict .travis.yml')
