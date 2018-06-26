@@ -190,6 +190,7 @@ def main():
     while True:
         with ignore_exceptions_except_exit():
             with GLOBAL_EXCEPTIONS.count_exceptions():
+                logging.debug('Fetching node list')
                 nodes = [x for x in get_nodes(master)
                          if not exclude_regex.match(x['name'])]
                 logging.debug('Found %d nodes', len(nodes))
