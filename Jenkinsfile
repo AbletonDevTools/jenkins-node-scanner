@@ -28,7 +28,7 @@ runTheBuilds.runDevToolsProject(
         groovylint.check('./Jenkinsfile')
       },
       hadolint: {
-        docker.image('hadolint/hadolint').inside("-v ${pwd()}:/ws") {
+        docker.image('hadolint/hadolint:v1.6.6').inside("-v ${pwd()}:/ws") {
           sh 'hadolint /ws/Dockerfile'
         }
       },
