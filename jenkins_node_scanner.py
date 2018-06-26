@@ -63,27 +63,61 @@ def get_args():
     """Configure arguments and parse them."""
     parser = argparse.ArgumentParser(
         description='Write Jenkins nodes to a file.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('url',
-                        help='Full URL to the Jenkins master, such as http://jenkins:80.')
-    parser.add_argument('output_file',
-                        help='Filename to write the node list.')
-    parser.add_argument('--username',
-                        help='Jenkins username.')
-    parser.add_argument('--password',
-                        help='Jenkins password.')
-    parser.add_argument('--exclude-regex', default='^master$',
-                        help='Exclude any nodes matching this regex.')
-    parser.add_argument('--timeout', default=60, type=int,
-                        help='Timeout in seconds for the Jenkins call.')
-    parser.add_argument('--period', default=60, type=int,
-                        help='How many seconds to wait between scans.')
-    parser.add_argument('--prometheus-port', default=8000, type=int,
-                        help='Port on which to expose Prometheus metrics.')
-    parser.add_argument('--target-port', default=9100, type=int,
-                        help='Target port to be scraped (e.g. 9100 for node_exporter).')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Enable more detailed logging.')
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument(
+        'url',
+        help='Full URL to the Jenkins master, such as http://jenkins:80.',
+    )
+    parser.add_argument(
+        'output_file',
+        help='Filename to write the node list.',
+    )
+    parser.add_argument(
+        '--username',
+        help='Jenkins username.',
+    )
+    parser.add_argument(
+        '--password',
+        help='Jenkins password.',
+    )
+    parser.add_argument(
+        '--exclude-regex',
+        default='^master$',
+        help='Exclude any nodes matching this regex.',
+    )
+    parser.add_argument(
+        '--timeout',
+        default=60,
+        type=int,
+        help='Timeout in seconds for the Jenkins call.',
+    )
+    parser.add_argument(
+        '--period',
+        default=60,
+        type=int,
+        help='How many seconds to wait between scans.',
+    )
+    parser.add_argument(
+        '--prometheus-port',
+        default=8000,
+        type=int,
+        help='Port on which to expose Prometheus metrics.',
+    )
+    parser.add_argument(
+        '--target-port',
+        default=9100,
+        type=int,
+        help='Target port to be scraped (e.g. 9100 for node_exporter).',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Enable more detailed logging.',
+    )
+
     return parser.parse_args()
 
 
