@@ -142,11 +142,15 @@ def get_node_ip(master, node):
 def get_nodes(master):
     """Get a list of nodes from a Jenkins master."""
     logging.debug('Connecting to master')
-    # pylint: disable=no-member
-    with JENKINS_API_EXCEPTIONS.labels('get_nodes').count_exceptions():
+    try:
         # pylint: disable=no-member
-        with JENKINS_API_LATENCY.labels('get_nodes').time():
-            return master.get_nodes()
+        with JENKINS_API_EXCEPTIONS.labels('get_nodes').count_exceptions():
+            # pylint: disable=no-member
+            with JENKINS_API_LATENCY.labels('get_nodes').time():
+                return master.get_nodes()
+    except jenkins.JenkinsException as error:
+        logging.warning('Could not connect to master: %s', error)
+        return []
 
 
 def write_output(output_file, node_info):
