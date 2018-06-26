@@ -74,24 +74,15 @@ def get_args():
         'output_file',
         help='Filename to write the node list.',
     )
-    parser.add_argument(
-        '--username',
-        help='Jenkins username.',
-    )
-    parser.add_argument(
-        '--password',
-        help='Jenkins password.',
-    )
+
     parser.add_argument(
         '--exclude-regex',
         default='^master$',
         help='Exclude any nodes matching this regex.',
     )
     parser.add_argument(
-        '--timeout',
-        default=60,
-        type=int,
-        help='Timeout in seconds for the Jenkins call.',
+        '--password',
+        help='Jenkins password.',
     )
     parser.add_argument(
         '--period',
@@ -110,6 +101,16 @@ def get_args():
         default=9100,
         type=int,
         help='Target port to be scraped (e.g. 9100 for node_exporter).',
+    )
+    parser.add_argument(
+        '--timeout',
+        default=60,
+        type=int,
+        help='Timeout in seconds for the Jenkins call.',
+    )
+    parser.add_argument(
+        '--username',
+        help='Jenkins username.',
     )
     parser.add_argument(
         '-v',
