@@ -214,7 +214,7 @@ def main():
 
                 write_output(args.output_file, node_info)
 
-        logging.debug('Waiting %f seconds', args.period)
+        logging.debug('Waiting %d seconds', args.period)
         time.sleep(args.period)
 
 
