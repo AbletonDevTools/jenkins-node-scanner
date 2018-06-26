@@ -168,9 +168,10 @@ def write_output(output_file, node_info):
 def main():
     """Run the main scanning loop."""
     args = get_args()
-    logging.basicConfig(level=logging.INFO)
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     logging.info('Connecting to Jenkins master at %s', args.url)
     master = jenkins.Jenkins(
