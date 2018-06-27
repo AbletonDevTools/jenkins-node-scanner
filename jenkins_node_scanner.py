@@ -63,27 +63,62 @@ def get_args():
     """Configure arguments and parse them."""
     parser = argparse.ArgumentParser(
         description='Write Jenkins nodes to a file.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('url',
-                        help='Full URL to the Jenkins master, such as http://jenkins:80.')
-    parser.add_argument('output_file',
-                        help='Filename to write the node list.')
-    parser.add_argument('--username',
-                        help='Jenkins username.')
-    parser.add_argument('--password',
-                        help='Jenkins password.')
-    parser.add_argument('--exclude-regex', default='^master$',
-                        help='Exclude any nodes matching this regex.')
-    parser.add_argument('--timeout', default=60, type=int,
-                        help='Timeout in seconds for the Jenkins call.')
-    parser.add_argument('--period', default=60, type=int,
-                        help='How many seconds to wait between scans.')
-    parser.add_argument('--prometheus-port', default=8000, type=int,
-                        help='Port on which to expose Prometheus metrics.')
-    parser.add_argument('--target-port', default=9100, type=int,
-                        help='Target port to be scraped (e.g. 9100 for node_exporter).')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Enable more detailed logging.')
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument(
+        'url',
+        help='Full URL to the Jenkins master, such as http://jenkins:80.',
+    )
+    parser.add_argument(
+        'output_file',
+        help='Filename to write the node list.',
+    )
+
+    parser.add_argument(
+        '--exclude-regex',
+        default='^master$',
+        help='Exclude any nodes matching this regex.',
+    )
+    parser.add_argument(
+        '--password',
+        help='Jenkins password.',
+    )
+    parser.add_argument(
+        '--period',
+        default=60,
+        type=int,
+        help='How many seconds to wait between scans.',
+    )
+    parser.add_argument(
+        '--prometheus-port',
+        default=8000,
+        type=int,
+        help='Port on which to expose Prometheus metrics.',
+    )
+    parser.add_argument(
+        '--target-port',
+        default=9100,
+        type=int,
+        help='Target port to be scraped (e.g. 9100 for node_exporter).',
+    )
+    parser.add_argument(
+        '--timeout',
+        default=60,
+        type=int,
+        help='Timeout in seconds for the Jenkins call.',
+    )
+    parser.add_argument(
+        '--username',
+        help='Jenkins username.',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Enable more detailed logging.',
+    )
+
     return parser.parse_args()
 
 
@@ -134,9 +169,10 @@ def write_output(output_file, node_info):
 def main():
     """Run the main scanning loop."""
     args = get_args()
-    logging.basicConfig(level=logging.INFO)
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     logging.info('Connecting to Jenkins master at %s', args.url)
     master = jenkins.Jenkins(
@@ -154,6 +190,7 @@ def main():
     while True:
         with ignore_exceptions_except_exit():
             with GLOBAL_EXCEPTIONS.count_exceptions():
+                logging.debug('Fetching node list')
                 nodes = [x for x in get_nodes(master)
                          if not exclude_regex.match(x['name'])]
                 logging.debug('Found %d nodes', len(nodes))
@@ -177,7 +214,7 @@ def main():
 
                 write_output(args.output_file, node_info)
 
-        logging.debug('Waiting %f seconds', args.period)
+        logging.debug('Waiting %d seconds', args.period)
         time.sleep(args.period)
 
 
