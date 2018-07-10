@@ -22,7 +22,7 @@ runTheBuilds.runDevToolsProject(
   test: { data ->
     parallel(failFast: false,
       flake8: {
-        data.venv.run('flake8 --max-line-length=90 -v --ignore= .')
+        data.venv.run('flake8 -v')
       },
       groovylint: {
         groovylint.check('./Jenkinsfile')
