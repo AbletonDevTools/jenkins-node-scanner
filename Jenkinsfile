@@ -33,7 +33,7 @@ runTheBuilds.runDevToolsProject(
         }
       },
       pydocstyle: {
-        data.venv.run('pydocstyle -v .')
+        data.venv.run('pydocstyle -v')
       },
       pylint: {
         data.venv.run('pylint --max-line-length=90 jenkins_node_scanner.py')
