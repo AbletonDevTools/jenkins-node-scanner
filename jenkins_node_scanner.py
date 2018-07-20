@@ -53,7 +53,7 @@ def ignore_exceptions_except_exit():
     """Ignores all exceptions except KeyboardInterrupt and SystemExit."""
     try:
         yield
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt, SystemExit):  # noqa pylint: disable=try-except-raise
         raise
     except:  # noqa pylint: disable=bare-except
         logging.exception('Unexpected error, continuing anyway.')

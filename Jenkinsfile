@@ -36,7 +36,7 @@ runTheBuilds.runDevToolsProject(
         data.venv.run('pydocstyle -v')
       },
       pylint: {
-        data.venv.run('pylint --max-line-length=90 jenkins_node_scanner.py')
+        data.venv.run('pylint jenkins_node_scanner.py')
       },
       yamllint: {
         data.venv.run('yamllint --strict .travis.yml')
