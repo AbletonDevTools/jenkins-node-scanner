@@ -13,7 +13,7 @@ runTheBuilds.runDevToolsProject(
     data['dtrImage'] = dtr.create('devtools', 'jenkins-node-scanner')
     VirtualEnv venv = virtualenv.create('python3.6')
     venv.run('pip install -r requirements.txt')
-    venv.run('pip install pylint flake8 flake8-commas yamllint pydocstyle')
+    venv.run('pip install pylint flake8 flake8-commas pydocstyle')
     data['venv'] = venv
   },
   build: { data ->
@@ -37,9 +37,6 @@ runTheBuilds.runDevToolsProject(
       },
       pylint: {
         data.venv.run('pylint jenkins_node_scanner.py')
-      },
-      yamllint: {
-        data.venv.run('yamllint --strict .travis.yml')
       },
     )
   },
