@@ -29,6 +29,9 @@ runTheBuilds.runDevToolsProject(
           sh 'hadolint --ignore DL3013 /ws/Dockerfile'
         }
       },
+      pipenv: {
+        sh 'pipenv check'
+      },
       pydocstyle: {
         sh 'pipenv run pydocstyle -v'
       },
