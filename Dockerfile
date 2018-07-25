@@ -6,8 +6,10 @@ VOLUME /output
 RUN mkdir -p /jenkins_node_scanner
 WORKDIR /jenkins_node_scanner
 
-COPY requirements.txt /jenkins_node_scanner
-RUN pip install --no-cache-dir -r requirements.txt
+COPY Pipfile /jenkins_node_scanner
+COPY Pipfile.lock /jenkins_node_scanner
+RUN pip install --no-cache-dir pipenv
+RUN pipenv install --system
 
 COPY jenkins_node_scanner.py /jenkins_node_scanner
 
