@@ -1,6 +1,6 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
-  'ableton-utils@0.8',
+  'ableton-utils@0.10',
   'groovylint@0.3',
   'python-utils@0.9',
 ]) _
@@ -41,7 +41,7 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: { data ->
-    runTheBuilds.runForSpecificBranches(['master'], false) {
+    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
       data['dtrImage'].push()
       data['dtrImage'].deploy(
         '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
