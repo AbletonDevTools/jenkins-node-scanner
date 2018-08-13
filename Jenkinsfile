@@ -1,7 +1,6 @@
-@SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
   'ableton-utils@0.10',
-  'groovylint@0.3',
+  'groovylint@0.4',
 ]) _
 
 
