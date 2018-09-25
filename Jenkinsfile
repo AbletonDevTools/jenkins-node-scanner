@@ -40,7 +40,12 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: { data ->
-    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
+    boolean shouldDeploy = env.FORCE_DEPLOY == 'true' ?: false
+    runTheBuilds.withMaster {
+      // Always deploy on the master branch, regardless of the value for FORCE_DEPLOY
+      shouldDeploy = true
+    }
+    if (shouldDeploy) {
       data['dtrImage'].push()
       data['dtrImage'].deploy(
         '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
