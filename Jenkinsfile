@@ -21,7 +21,7 @@ runTheBuilds.runDevToolsProject(
         groovylint.check('./Jenkinsfile')
       },
       hadolint: {
-        docker.image('hadolint/hadolint:v1.6.6').inside("-v ${pwd()}:/ws") {
+        docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {
           // DL3013: Pin versions in pip
           // We are only using pip to install pipenv, and we always want the latest and
           // greatest version for that.
