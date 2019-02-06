@@ -7,7 +7,7 @@
 runTheBuilds.runDevToolsProject(
   setup: { data ->
     data['dtrImage'] = dtr.create('devtools', 'jenkins-node-scanner')
-    sh 'pipenv install --dev'
+    sh 'pipenv sync --dev'
   },
   build: { data ->
     data['dtrImage'].build()

@@ -9,7 +9,7 @@ about updating dependencies and so on.
 
 Basic usage:
 
-1. `pipenv install`
+1. `pipenv sync`
 1. `pipenv run python jenkins_node_scanner.py http://jenkins:8080 output.json --period 5`
 1. `cat output.json`
 
