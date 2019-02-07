@@ -9,7 +9,7 @@ WORKDIR /jenkins_node_scanner
 COPY Pipfile /jenkins_node_scanner
 COPY Pipfile.lock /jenkins_node_scanner
 RUN pip install --no-cache-dir pipenv
-RUN pipenv install --system
+RUN pipenv install --system --ignore-pipfile
 
 COPY jenkins_node_scanner.py /jenkins_node_scanner
 
