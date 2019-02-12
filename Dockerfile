@@ -6,7 +6,6 @@ VOLUME /output
 RUN mkdir -p /jenkins_node_scanner
 WORKDIR /jenkins_node_scanner
 
-COPY Pipfile /jenkins_node_scanner
 COPY Pipfile.lock /jenkins_node_scanner
 RUN pip install --no-cache-dir pipenv
 RUN pipenv install --system --ignore-pipfile
