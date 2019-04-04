@@ -123,7 +123,10 @@ def get_args():
 
 
 def get_node_ip(master, node):
-    """Return the IP address of a node."""
+    """Return the IP address of a node.
+
+    Returns None if the node's IP address can not be determined.
+    """
     # pylint: disable=no-member
     with JENKINS_API_EXCEPTIONS.labels('get_node_config').count_exceptions():
         # pylint: disable=no-member
