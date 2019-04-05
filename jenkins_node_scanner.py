@@ -123,12 +123,24 @@ def get_args():
 
 
 def get_node_ip(master, node):
-    """Return the IP address of a node."""
+    """Return the IP address of a node.
+
+    Returns None if the node's IP address can not be determined.
+    """
     # pylint: disable=no-member
-    with JENKINS_API_EXCEPTIONS.labels('get_node_config').count_exceptions():
-        # pylint: disable=no-member
-        with JENKINS_API_LATENCY.labels('get_node_config').time():
-            node_config = master.get_node_config(node['name'])
+    try:
+        with JENKINS_API_EXCEPTIONS.labels('get_node_config').count_exceptions():
+            # pylint: disable=no-member
+            with JENKINS_API_LATENCY.labels('get_node_config').time():
+                node_config = master.get_node_config(node['name'])
+    except jenkins.NotFoundException:
+        # If we hit a 404 for some reason, we still want to process other nodes so we
+        # capture and log the exception here instead of letting it rise to the top-level
+        # loop. It will still be counted by the count_exceptions() context manager
+        # and reported to Prometheus, so capturing it here won't hide it from monitoring.
+        logging.exception('404 when contacting %s', node)
+        return None
+
     if 'hudson.plugins.swarm.SwarmSlave' not in node_config:
         logging.warning('Unrecognized node type: %s', node['name'])
         return None
