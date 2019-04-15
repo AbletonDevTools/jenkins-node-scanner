@@ -48,7 +48,10 @@ runTheBuilds.runDevToolsProject(
     if (shouldDeploy) {
       data['dtrImage'].push()
       data['dtrImage'].deploy(
-        '8000', '-v jenkins-nodes:/jenkins_nodes', env.CONTAINER_ARGS)
+        '8000',
+        '-v jenkins-nodes:/jenkins_nodes',
+        "${env.JENKINS_URL} /jenkins_nodes/output.json",
+      )
     }
   },
   cleanup: {
