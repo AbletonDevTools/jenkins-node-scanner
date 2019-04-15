@@ -3,11 +3,11 @@ if (env.HEAD_REF || env.BASE_REF) {
   return
 }
 
-library 'ableton-utils@0.11'
+library 'ableton-utils@0.12'
 library 'groovylint@0.4'
 
 
-runTheBuilds.runDevToolsProject(
+devToolsProject.run(
   setup: { data ->
     data['dtrImage'] = dtr.create('devtools', 'jenkins-node-scanner')
     sh 'pipenv sync --dev'
@@ -43,13 +43,9 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: { data ->
-    boolean shouldDeploy = env.FORCE_DEPLOY == 'true' ?: false
-    runTheBuilds.withMaster {
-      // Always deploy on the master branch, regardless of the value for FORCE_DEPLOY
-      shouldDeploy = true
-    }
-    if (shouldDeploy) {
+    if (runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true') {
       data['dtrImage'].push()
+      // TODO: CONTAINER_ARGS needs to be converted to a credential text
       data['dtrImage'].deploy(
         '8000',
         '-v jenkins-nodes:/jenkins_nodes',
