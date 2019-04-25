@@ -45,7 +45,6 @@ devToolsProject.run(
   deploy: { data ->
     if (runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true') {
       data['dtrImage'].push()
-      // TODO: CONTAINER_ARGS needs to be converted to a credential text
       data['dtrImage'].deploy(
         '8000',
         '-v jenkins-nodes:/jenkins_nodes',
