@@ -42,15 +42,14 @@ devToolsProject.run(
       },
     )
   },
+  deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true'},
   deploy: { data ->
-    if (runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true') {
-      data['dtrImage'].push()
-      data['dtrImage'].deploy(
-        '8000',
-        '-v jenkins-nodes:/jenkins_nodes',
-        "${env.JENKINS_URL} /jenkins_nodes/output.json",
-      )
-    }
+    data['dtrImage'].push()
+    data['dtrImage'].deploy(
+      '8000',
+      '-v jenkins-nodes:/jenkins_nodes',
+      "${env.JENKINS_URL} /jenkins_nodes/output.json",
+    )
   },
   cleanup: {
     try {
