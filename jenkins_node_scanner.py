@@ -89,7 +89,8 @@ def get_args():
         '--period',
         default=60,
         type=int,
-        help='How many seconds to wait between scans.',
+        help='How many seconds to wait between scans. If 0, then the script will exit '
+             'after performing a single scan.',
     )
     parser.add_argument(
         '--prometheus-port',
@@ -230,6 +231,9 @@ def main():
                 } for node, ip in node_ips]
 
                 write_output(args.output_file, node_info)
+
+        if args.period == 0:
+            break
 
         logging.debug('Waiting %d seconds', args.period)
         time.sleep(args.period)
