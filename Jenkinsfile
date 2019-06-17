@@ -42,7 +42,7 @@ devToolsProject.run(
       },
     )
   },
-  deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true'},
+  deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true' },
   deploy: { data ->
     data['dtrImage'].push()
     data['dtrImage'].deploy(
