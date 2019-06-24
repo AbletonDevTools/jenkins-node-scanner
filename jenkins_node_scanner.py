@@ -100,9 +100,13 @@ def get_args():
     )
     parser.add_argument(
         '--target-port',
-        default=9100,
+        action='append',
+        default=[],
+        dest='target_ports',
+        required=True,
         type=int,
-        help='Target port to be scraped (e.g. 9100 for node_exporter).',
+        help='Target port to be scraped (e.g. 9100 for node_exporter). May be given '
+             'multiple times for multiple ports.',
     )
     parser.add_argument(
         '--timeout',
@@ -227,8 +231,8 @@ def main():
                         'jenkins_master': args.url,
                         'node': node['name'],
                     },
-                    'targets': ['%s:%d' % (ip, args.target_port)],
-                } for node, ip in node_ips]
+                    'targets': ['%s:%d' % (ip_addr, port) for port in args.target_ports],
+                } for node, ip_addr in node_ips]
 
                 write_output(args.output_file, node_info)
 
