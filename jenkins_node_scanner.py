@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import shutil
+import socket
 import sys
 import tempfile
 import time
@@ -171,6 +172,17 @@ def get_nodes(master):
         return []
 
 
+def is_port_open(ip_addr, port):
+    """Return whether a TCP port is open on the given IP address."""
+    try:
+        logging.debug('Testing port %d on %s', port, ip_addr)
+        sock = socket.create_connection((ip_addr, int(port)), timeout=1)
+        sock.shutdown(socket.SHUT_RDWR)
+        return True
+    except (ConnectionRefusedError, socket.timeout):
+        return False
+
+
 def write_output(output_file, node_info):
     """Attempt to atomically write data as json to the output file.
 
@@ -231,7 +243,8 @@ def main():
                         'jenkins_master': args.url,
                         'node': node['name'],
                     },
-                    'targets': ['%s:%d' % (ip_addr, port) for port in args.target_ports],
+                    'targets': ['%s:%d' % (ip_addr, port) for port in args.target_ports
+                                if is_port_open(ip_addr, port)],
                 } for node, ip_addr in node_ips]
 
                 write_output(args.output_file, node_info)
