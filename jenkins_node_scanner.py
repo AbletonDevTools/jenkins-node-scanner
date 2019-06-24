@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import sys
 import tempfile
 import time
@@ -179,7 +180,7 @@ def write_output(output_file, node_info):
             filehandle.flush()
             os.fsync(filehandle.fileno())
         # Overwrite output by renaming the tempfile to the output file.
-        os.rename(tmpfile, output_file)
+        shutil.move(tmpfile, output_file)
 
 
 def main():
