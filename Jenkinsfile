@@ -42,13 +42,14 @@ devToolsProject.run(
       },
     )
   },
-  deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true'},
+  deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true' },
   deploy: { data ->
     data['dtrImage'].push()
     data['dtrImage'].deploy(
       '8000',
       '-v jenkins-nodes:/jenkins_nodes',
-      "${env.JENKINS_URL} /jenkins_nodes/output.json",
+      '--target-port 9100 --target-port 9323' +
+        " ${env.JENKINS_URL} /jenkins_nodes/output.json",
     )
   },
   cleanup: {

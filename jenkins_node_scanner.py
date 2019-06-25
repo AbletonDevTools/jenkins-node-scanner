@@ -9,6 +9,8 @@ import json
 import logging
 import os
 import re
+import shutil
+import socket
 import sys
 import tempfile
 import time
@@ -88,7 +90,8 @@ def get_args():
         '--period',
         default=60,
         type=int,
-        help='How many seconds to wait between scans.',
+        help='How many seconds to wait between scans. If 0, then the script will exit '
+             'after performing a single scan.',
     )
     parser.add_argument(
         '--prometheus-port',
@@ -98,9 +101,13 @@ def get_args():
     )
     parser.add_argument(
         '--target-port',
-        default=9100,
+        action='append',
+        default=[],
+        dest='target_ports',
+        required=True,
         type=int,
-        help='Target port to be scraped (e.g. 9100 for node_exporter).',
+        help='Target port to be scraped (e.g. 9100 for node_exporter). May be given '
+             'multiple times for multiple ports.',
     )
     parser.add_argument(
         '--timeout',
@@ -165,6 +172,17 @@ def get_nodes(master):
         return []
 
 
+def is_port_open(ip_addr, port):
+    """Return whether a TCP port is open on the given IP address."""
+    try:
+        logging.debug('Testing port %d on %s', port, ip_addr)
+        sock = socket.create_connection((ip_addr, int(port)), timeout=1)
+        sock.shutdown(socket.SHUT_RDWR)
+        return True
+    except (ConnectionRefusedError, socket.timeout):
+        return False
+
+
 def write_output(output_file, node_info):
     """Attempt to atomically write data as json to the output file.
 
@@ -179,7 +197,7 @@ def write_output(output_file, node_info):
             filehandle.flush()
             os.fsync(filehandle.fileno())
         # Overwrite output by renaming the tempfile to the output file.
-        os.rename(tmpfile, output_file)
+        shutil.move(tmpfile, output_file)
 
 
 def main():
@@ -225,10 +243,14 @@ def main():
                         'jenkins_master': args.url,
                         'node': node['name'],
                     },
-                    'targets': ['%s:%d' % (ip, args.target_port)],
-                } for node, ip in node_ips]
+                    'targets': ['%s:%d' % (ip_addr, port) for port in args.target_ports
+                                if is_port_open(ip_addr, port)],
+                } for node, ip_addr in node_ips]
 
                 write_output(args.output_file, node_info)
+
+        if args.period == 0:
+            break
 
         logging.debug('Waiting %d seconds', args.period)
         time.sleep(args.period)
