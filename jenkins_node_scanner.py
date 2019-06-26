@@ -208,14 +208,6 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-    logging.info('Connecting to Jenkins master at %s', args.url)
-    master = jenkins.Jenkins(
-        args.url,
-        username=args.username,
-        password=args.password,
-        timeout=args.timeout,
-    )
-
     start_http_server(args.prometheus_port)
     logging.info('Serving metrics on port %d', args.prometheus_port)
 
@@ -224,6 +216,14 @@ def main():
     while True:
         with ignore_exceptions_except_exit():
             with GLOBAL_EXCEPTIONS.count_exceptions():
+                logging.debug('Connecting to Jenkins master at %s', args.url)
+                master = jenkins.Jenkins(
+                    args.url,
+                    username=args.username,
+                    password=args.password,
+                    timeout=args.timeout,
+                )
+
                 logging.debug('Fetching node list')
                 nodes = [x for x in get_nodes(master)
                          if not exclude_regex.match(x['name'])]
