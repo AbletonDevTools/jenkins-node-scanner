@@ -81,12 +81,16 @@ def get_args():
     parser.add_argument(
         '-u',
         '--url',
+        action='append',
+        default=[],
+        dest='urls',
         required=True,
-        help='Full URL to the Jenkins master, such as http://jenkins:80.',
+        help='Full URL to the Jenkins master, such as http://jenkins:80. May be given '
+             'multiple times for multiple masters.',
     )
     parser.add_argument(
         '--password',
-        help='Jenkins password.',
+        help='Jenkins password (note that this value is used for all Jenkins masters).',
     )
     parser.add_argument(
         '--period',
@@ -119,7 +123,7 @@ def get_args():
     )
     parser.add_argument(
         '--username',
-        help='Jenkins username.',
+        help='Jenkins username (note that this value is used for all Jenkins masters).',
     )
     parser.add_argument(
         '-v',
@@ -239,15 +243,20 @@ def main():
     while True:
         with ignore_exceptions_except_exit():
             with GLOBAL_EXCEPTIONS.count_exceptions():
-                logging.debug('Connecting to Jenkins master at %s', args.url)
-                master = jenkins.Jenkins(
-                    args.url,
-                    username=args.username,
-                    password=args.password,
-                    timeout=args.timeout,
-                )
+                node_infos = []
 
-                node_infos = get_node_infos(master, args.target_ports, exclude_regex)
+                for url in args.urls:
+                    logging.debug('Connecting to Jenkins master at %s', url)
+                    master = jenkins.Jenkins(
+                        url,
+                        username=args.username,
+                        password=args.password,
+                        timeout=args.timeout,
+                    )
+
+                    node_infos.extend(
+                        get_node_infos(master, args.target_ports, exclude_regex),
+                    )
 
                 write_output(args.output_file, node_infos)
 
