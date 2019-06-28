@@ -69,10 +69,6 @@ def get_args():
     )
 
     parser.add_argument(
-        'url',
-        help='Full URL to the Jenkins master, such as http://jenkins:80.',
-    )
-    parser.add_argument(
         'output_file',
         help='Filename to write the node list.',
     )
@@ -81,6 +77,12 @@ def get_args():
         '--exclude-regex',
         default='^master$',
         help='Exclude any nodes matching this regex.',
+    )
+    parser.add_argument(
+        '-u',
+        '--url',
+        required=True,
+        help='Full URL to the Jenkins master, such as http://jenkins:80.',
     )
     parser.add_argument(
         '--password',
