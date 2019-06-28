@@ -49,7 +49,7 @@ devToolsProject.run(
       '8000',
       '-v jenkins-nodes:/jenkins_nodes',
       '--target-port 9100 --target-port 9323' +
-        " ${env.JENKINS_URL} /jenkins_nodes/output.json",
+        " --url ${env.JENKINS_URL} /jenkins_nodes/output.json",
     )
   },
   cleanup: {

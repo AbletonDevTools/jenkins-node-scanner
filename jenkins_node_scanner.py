@@ -69,10 +69,6 @@ def get_args():
     )
 
     parser.add_argument(
-        'url',
-        help='Full URL to the Jenkins master, such as http://jenkins:80.',
-    )
-    parser.add_argument(
         'output_file',
         help='Filename to write the node list.',
     )
@@ -83,8 +79,18 @@ def get_args():
         help='Exclude any nodes matching this regex.',
     )
     parser.add_argument(
+        '-u',
+        '--url',
+        action='append',
+        default=[],
+        dest='urls',
+        required=True,
+        help='Full URL to the Jenkins master, such as http://jenkins:80. May be given '
+             'multiple times for multiple masters.',
+    )
+    parser.add_argument(
         '--password',
-        help='Jenkins password.',
+        help='Jenkins password (note that this value is used for all Jenkins masters).',
     )
     parser.add_argument(
         '--period',
@@ -117,7 +123,7 @@ def get_args():
     )
     parser.add_argument(
         '--username',
-        help='Jenkins username.',
+        help='Jenkins username (note that this value is used for all Jenkins masters).',
     )
     parser.add_argument(
         '-v',
@@ -158,6 +164,27 @@ def get_node_ip(master, node):
     return description.split('from ')[1].split(' :')[0]
 
 
+def get_node_infos(master, target_ports, exclude_regex):
+    """Build a list of target information for each node connected to the master."""
+    logging.debug('Fetching node list')
+    nodes = [x for x in get_nodes(master) if not exclude_regex.match(x['name'])]
+    logging.debug('Found %d nodes', len(nodes))
+
+    raw_node_ips = [(node, get_node_ip(master, node)) for node in nodes]
+    node_ips = [(node, ip) for node, ip in raw_node_ips if ip is not None]
+
+    # pylint: disable=no-member
+    NODES_FOUND.labels(master.server).set(len(node_ips))
+    # pylint: disable=no-member
+    UNPARSEABLE_NODES_FOUND.labels(master.server).set(len(raw_node_ips) - len(node_ips))
+
+    return [{
+        'labels': {'jenkins_master': master.server, 'node': node['name']},
+        'targets': ['%s:%d' % (ip_addr, port) for port in target_ports
+                    if is_port_open(ip_addr, port)],
+    } for node, ip_addr in node_ips]
+
+
 def get_nodes(master):
     """Get a list of nodes from a Jenkins master."""
     logging.debug('Connecting to master')
@@ -183,7 +210,7 @@ def is_port_open(ip_addr, port):
         return False
 
 
-def write_output(output_file, node_info):
+def write_output(output_file, node_infos):
     """Attempt to atomically write data as json to the output file.
 
     This is done by writing to a tempfile and moving it over the output file. This is an
@@ -193,7 +220,7 @@ def write_output(output_file, node_info):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpfile = os.path.join(tmpdir, output_file)
         with open(tmpfile, 'w') as filehandle:
-            json.dump(node_info, filehandle, sort_keys=True, indent=2)
+            json.dump(node_infos, filehandle, sort_keys=True, indent=2)
             filehandle.flush()
             os.fsync(filehandle.fileno())
         # Overwrite output by renaming the tempfile to the output file.
@@ -208,14 +235,6 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-    logging.info('Connecting to Jenkins master at %s', args.url)
-    master = jenkins.Jenkins(
-        args.url,
-        username=args.username,
-        password=args.password,
-        timeout=args.timeout,
-    )
-
     start_http_server(args.prometheus_port)
     logging.info('Serving metrics on port %d', args.prometheus_port)
 
@@ -224,30 +243,22 @@ def main():
     while True:
         with ignore_exceptions_except_exit():
             with GLOBAL_EXCEPTIONS.count_exceptions():
-                logging.debug('Fetching node list')
-                nodes = [x for x in get_nodes(master)
-                         if not exclude_regex.match(x['name'])]
-                logging.debug('Found %d nodes', len(nodes))
+                node_infos = []
 
-                raw_node_ips = [(node, get_node_ip(master, node)) for node in nodes]
-                node_ips = [(node, ip) for node, ip in raw_node_ips if ip is not None]
+                for url in args.urls:
+                    logging.debug('Connecting to Jenkins master at %s', url)
+                    master = jenkins.Jenkins(
+                        url,
+                        username=args.username,
+                        password=args.password,
+                        timeout=args.timeout,
+                    )
 
-                # pylint: disable=no-member
-                NODES_FOUND.labels(args.url).set(len(node_ips))
-                # pylint: disable=no-member
-                UNPARSEABLE_NODES_FOUND.labels(args.url).set(
-                    len(raw_node_ips) - len(node_ips))
+                    node_infos.extend(
+                        get_node_infos(master, args.target_ports, exclude_regex),
+                    )
 
-                node_info = [{
-                    'labels': {
-                        'jenkins_master': args.url,
-                        'node': node['name'],
-                    },
-                    'targets': ['%s:%d' % (ip_addr, port) for port in args.target_ports
-                                if is_port_open(ip_addr, port)],
-                } for node, ip_addr in node_ips]
-
-                write_output(args.output_file, node_info)
+                write_output(args.output_file, node_infos)
 
         if args.period == 0:
             break
