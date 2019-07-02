@@ -8,8 +8,8 @@ prometheus-client = "*"
 python-jenkins = "*"
 
 [dev-packages]
+black = "==19.3b0"
 flake8 = "*"
-flake8-commas = "*"
 pydocstyle = "*"
 pylint = "*"
 
