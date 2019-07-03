@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.7-alpine3.10
 
 RUN mkdir -p /output
 VOLUME /output
