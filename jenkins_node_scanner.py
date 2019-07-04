@@ -32,16 +32,10 @@ JENKINS_API_EXCEPTIONS = Counter(
 )
 
 GLOBAL_EXCEPTIONS = Counter(
-    'node_scanner_exceptions',
-    'Unhandled top-level exceptions.',
-    [],
+    'node_scanner_exceptions', 'Unhandled top-level exceptions.', []
 )
 
-NODES_FOUND = Gauge(
-    'nodes_found',
-    'Nodes found in a scan.',
-    ['jenkins_master'],
-)
+NODES_FOUND = Gauge('nodes_found', 'Nodes found in a scan.', ['jenkins_master'])
 
 UNPARSEABLE_NODES_FOUND = Gauge(
     'unparseable_nodes_found',
@@ -68,10 +62,7 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument(
-        'output_file',
-        help='Filename to write the node list.',
-    )
+    parser.add_argument('output_file', help='Filename to write the node list.')
 
     parser.add_argument(
         '--exclude-regex',
@@ -85,8 +76,10 @@ def get_args():
         default=[],
         dest='urls',
         required=True,
-        help='Full URL to the Jenkins master, such as http://jenkins:80. May be given '
-             'multiple times for multiple masters.',
+        help=(
+            'Full URL to the Jenkins master, such as http://jenkins:80. May be given '
+            'multiple times for multiple masters.'
+        ),
     )
     parser.add_argument(
         '--password',
@@ -96,8 +89,10 @@ def get_args():
         '--period',
         default=60,
         type=int,
-        help='How many seconds to wait between scans. If 0, then the script will exit '
-             'after performing a single scan.',
+        help=(
+            'How many seconds to wait between scans. If 0, then the script will exit '
+            'after performing a single scan.'
+        ),
     )
     parser.add_argument(
         '--prometheus-port',
@@ -112,8 +107,10 @@ def get_args():
         dest='target_ports',
         required=True,
         type=int,
-        help='Target port to be scraped (e.g. 9100 for node_exporter). May be given '
-             'multiple times for multiple ports.',
+        help=(
+            'Target port to be scraped (e.g. 9100 for node_exporter). May be given '
+            'multiple times for multiple ports.'
+        ),
     )
     parser.add_argument(
         '--timeout',
@@ -126,10 +123,7 @@ def get_args():
         help='Jenkins username (note that this value is used for all Jenkins masters).',
     )
     parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help='Enable more detailed logging.',
+        '-v', '--verbose', action='store_true', help='Enable more detailed logging.'
     )
 
     return parser.parse_args()
@@ -178,11 +172,17 @@ def get_node_infos(master, target_ports, exclude_regex):
     # pylint: disable=no-member
     UNPARSEABLE_NODES_FOUND.labels(master.server).set(len(raw_node_ips) - len(node_ips))
 
-    return [{
-        'labels': {'jenkins_master': master.server, 'node': node['name']},
-        'targets': ['%s:%d' % (ip_addr, port) for port in target_ports
-                    if is_port_open(ip_addr, port)],
-    } for node, ip_addr in node_ips]
+    return [
+        {
+            'labels': {'jenkins_master': master.server, 'node': node['name']},
+            'targets': [
+                '%s:%d' % (ip_addr, port)
+                for port in target_ports
+                if is_port_open(ip_addr, port)
+            ],
+        }
+        for node, ip_addr in node_ips
+    ]
 
 
 def get_nodes(master):
@@ -255,7 +255,7 @@ def main():
                     )
 
                     node_infos.extend(
-                        get_node_infos(master, args.target_ports, exclude_regex),
+                        get_node_infos(master, args.target_ports, exclude_regex)
                     )
 
                 write_output(args.output_file, node_infos)

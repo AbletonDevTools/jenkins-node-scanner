@@ -12,6 +12,9 @@ devToolsProject.run(
   },
   test: {
     parallel(failFast: false,
+      black: {
+        sh 'pipenv run black --check .'
+      },
       flake8: {
         sh 'pipenv run flake8 -v'
       },

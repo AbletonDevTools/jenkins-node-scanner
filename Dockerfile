@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.7-alpine3.10
 
 RUN mkdir -p /output
 VOLUME /output
@@ -8,7 +8,7 @@ WORKDIR /jenkins_node_scanner
 
 COPY Pipfile /jenkins_node_scanner
 COPY Pipfile.lock /jenkins_node_scanner
-RUN pip install --no-cache-dir pipenv
+RUN pip install --no-cache-dir pipenv==2018.11.26
 RUN pipenv install --system --ignore-pipfile
 
 COPY jenkins_node_scanner.py /jenkins_node_scanner
