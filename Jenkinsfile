@@ -43,12 +43,11 @@ devToolsProject.run(
   deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true' },
   deploy: { data ->
     data['dtrImage'].push()
-    data['dtrImage'].deploy(
-      '8000',
-      '-v jenkins-nodes:/jenkins_nodes',
-      '--target-port 9100 --target-port 9323' +
-        " --url ${env.JENKINS_URL} /jenkins_nodes/output.json",
-    )
+    String cliArgs = encryptedFile.read(
+      path: 'cli-args.enc',
+      credentialsId: 'jenkins-node-scanner-password',
+    ).trim()
+    data['dtrImage'].deploy('8000', '-v jenkins-nodes:/jenkins_nodes', cliArgs)
   },
   cleanup: {
     try {
