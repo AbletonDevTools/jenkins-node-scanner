@@ -9,3 +9,4 @@ pull_requests:
 
 pushes:
   - master
+  - ableton_utils_test

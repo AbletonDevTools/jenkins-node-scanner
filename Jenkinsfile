@@ -1,4 +1,4 @@
-library 'ableton-utils@0.13'
+library 'ableton-utils@restart'
 library 'groovylint@0.6'
 
 
