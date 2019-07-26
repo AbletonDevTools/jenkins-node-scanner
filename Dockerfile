@@ -6,13 +6,23 @@ VOLUME /output
 RUN mkdir -p /jenkins_node_scanner
 WORKDIR /jenkins_node_scanner
 
+RUN apt-get update \
+    && apt-get install -y supervisor=3.3.5-1 wget=1.20.1-1.1 --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN wget -q -O - https://github.com/papertrail/remote_syslog2/releases/download/v0.17/remote_syslog_linux_amd64.tar.gz \
+    | tar -zxf -
+
+
 COPY Pipfile /jenkins_node_scanner
 COPY Pipfile.lock /jenkins_node_scanner
 RUN pip install --no-cache-dir pipenv==2018.11.26
 RUN pipenv install --system --ignore-pipfile
 
+RUN mkdir -p /logs/server
+
 COPY jenkins_node_scanner.py /jenkins_node_scanner
 
 EXPOSE 8000
-ENTRYPOINT ["./jenkins_node_scanner.py"]
-CMD ["--help"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
