@@ -2,8 +2,6 @@
 
 """Continually scan a Jenkins master and write the nodes to a file."""
 
-from contextlib import contextmanager
-from xml.etree import ElementTree
 import argparse
 import json
 import logging
@@ -15,8 +13,12 @@ import sys
 import tempfile
 import time
 
+from contextlib import contextmanager
+from xml.etree import ElementTree
+
 import jenkins
-from prometheus_client import start_http_server, Counter, Gauge, Histogram
+
+from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
 
 JENKINS_API_LATENCY = Histogram(
