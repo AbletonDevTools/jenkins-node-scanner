@@ -23,6 +23,8 @@ RUN pipenv install --system --ignore-pipfile
 RUN mkdir -p /logs/server
 
 COPY jenkins_node_scanner.py /jenkins_node_scanner
+COPY supervisord.conf /etc/supervisord.conf
+COPY papertrail_config.yml /etc/log_files.yml
 
 EXPOSE 8000
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

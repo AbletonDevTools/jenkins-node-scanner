@@ -1,0 +1,13 @@
+[supervisord]
+nodaemon=true
+user=root
+
+[program:server]
+environment=PYTHONPATH=/app
+command=/usr/bin/env python3 /app/jenkins_node_scanner.py
+redirect_stderr=true
+stdout_logfile=/logs/server
+
+[program:logpipe]
+environment=LC_ALL="C.UTF-8", LANG="C.UTF-8"
+command=/jenkins_node_scanner/remote_syslog/remote_syslog -D --tls -d {{ host }} -p {{ port }} /logs/server
