@@ -8,6 +8,15 @@ devToolsProject.run(
     sh 'pipenv sync --dev'
   },
   build: { data ->
+    Map creds = encryptedFile.readJson(
+      path: 'credentials.json.enc',
+      credentialsId: 'jenkins-node-scanner-password',
+    )
+    String jinjaCommand = "jinja2 -D host=${creds['host']} -D port=${creds['port']}"
+    ['papertrail_config.yml', 'supervisord.conf'].each { file ->
+      sh "pipenv run ${jinjaCommand} -o ${file} ${file}.j2"
+    }
+
     data['dtrImage'].build()
   },
   test: {
@@ -44,6 +53,7 @@ devToolsProject.run(
       path: 'cli-args.enc',
       credentialsId: 'jenkins-node-scanner-password',
     ).trim()
+
     data['dtrImage'].deploy('8000', '-v jenkins-nodes:/jenkins_nodes', cliArgs)
   },
   cleanup: {
