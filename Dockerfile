@@ -20,7 +20,7 @@ COPY Pipfile.lock /jenkins_node_scanner
 RUN pip install --no-cache-dir pipenv==2018.11.26
 RUN pipenv install --system --ignore-pipfile
 
-RUN mkdir -p /logs/server
+RUN mkdir /logs/ && touch /logs/server
 
 COPY jenkins_node_scanner.py /jenkins_node_scanner
 COPY supervisord.conf /etc/supervisord.conf
