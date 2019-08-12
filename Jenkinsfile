@@ -12,10 +12,16 @@ devToolsProject.run(
       path: 'credentials.json.enc',
       credentialsId: 'jenkins-node-scanner-password',
     )
+
     String jinjaCommand = "jinja2 -D host=${creds['host']} -D port=${creds['port']}"
-    ['papertrail_config.yml', 'supervisord.conf'].each { file ->
-      sh "pipenv run ${jinjaCommand} -o ${file} ${file}.j2"
-    }
+    sh "pipenv run ${jinjaCommand} -o papertrail_config.yml papertrail_config.yml.j2"
+
+    String cliArgs = encryptedFile.read(
+      path: 'cli-args.enc',
+      credentialsId: 'jenkins-node-scanner-password',
+    ).trim()
+    sh "pipenv run ${jinjaCommand} -D args='${cliArgs}'" +
+      ' -o supervisord.conf supervisord.conf.j2'
 
     data['dtrImage'].build()
   },
@@ -49,12 +55,7 @@ devToolsProject.run(
   deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true' },
   deploy: { data ->
     data['dtrImage'].push()
-    String cliArgs = encryptedFile.read(
-      path: 'cli-args.enc',
-      credentialsId: 'jenkins-node-scanner-password',
-    ).trim()
-
-    data['dtrImage'].deploy('8000', '-v jenkins-nodes:/jenkins_nodes', cliArgs)
+    data['dtrImage'].deploy('8000', '-v jenkins-nodes:/jenkins_nodes')
   },
   cleanup: {
     try {
