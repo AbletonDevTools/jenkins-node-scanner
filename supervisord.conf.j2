@@ -4,7 +4,7 @@ user=root
 
 [program:server]
 environment=PYTHONPATH=/app
-command=/usr/bin/env python3 /app/jenkins_node_scanner.py {{ args }}
+command=/usr/bin/env python3 /jenkins_node_scanner/jenkins_node_scanner.py {{ args }}
 redirect_stderr=true
 stdout_logfile=/logs/server
 
