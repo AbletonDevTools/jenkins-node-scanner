@@ -38,10 +38,7 @@ devToolsProject.run(
       },
       hadolint: {
         docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {
-          // DL3013: Pin versions in pip
-          // We are only using pip to install pipenv, and we always want the latest and
-          // greatest version for that.
-          sh 'hadolint --ignore DL3013 /ws/Dockerfile'
+          sh 'hadolint /ws/Dockerfile'
         }
       },
       pydocstyle: {
