@@ -23,7 +23,7 @@ devToolsProject.run(
     sh "pipenv run ${jinjaCommand} -D args='${cliArgs}'" +
       ' -o supervisord.conf supervisord.conf.j2'
 
-    data['dtrImage'].build()
+    data.dtrImage.build()
   },
   test: {
     parallel(failFast: false,
@@ -54,8 +54,8 @@ devToolsProject.run(
   },
   deployWhen: { return runTheBuilds.isPushTo(['master']) || env.FORCE_DEPLOY == 'true' },
   deploy: { data ->
-    data['dtrImage'].push()
-    data['dtrImage'].deploy('8000', '-v jenkins-nodes:/jenkins_nodes')
+    data.dtrImage.push()
+    data.dtrImage.deploy('8000', '-v jenkins-nodes:/jenkins_nodes')
   },
   cleanup: {
     try {
