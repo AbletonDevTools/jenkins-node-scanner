@@ -15,10 +15,8 @@ RUN wget -q -O - https://github.com/papertrail/remote_syslog2/releases/download/
     | tar -zxf -
 
 
-COPY Pipfile /jenkins_node_scanner
-COPY Pipfile.lock /jenkins_node_scanner
-RUN pip install --no-cache-dir pipenv==2018.11.26
-RUN pipenv install --system --ignore-pipfile
+COPY requirements.txt /jenkins_node_scanner
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 RUN mkdir /logs/ && touch /logs/server
 
