@@ -1,3 +1,8 @@
+# This Repository is Unmaintained
+
+This repository is currently unmaintained. You are welcome to use it, but it will not see
+any further development.
+
 # jenkins-node-scanner
 
 A service to list Jenkins nodes for further Prometheus scraping. The output is intended to
